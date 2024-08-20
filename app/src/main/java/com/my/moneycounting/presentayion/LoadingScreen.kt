@@ -1,4 +1,4 @@
-package com.my.moneycounting
+package com.my.moneycounting.presentayion
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.my.moneycounting.R
 import kotlinx.coroutines.delay
 
 

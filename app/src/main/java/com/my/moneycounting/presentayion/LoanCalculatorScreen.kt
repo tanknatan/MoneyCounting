@@ -1,0 +1,349 @@
+package com.my.moneycounting.presentayion
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.my.moneycounting.R
+import kotlin.math.pow
+
+//@Composable
+//fun CalculatorScreen(
+//    onBackClick: () -> Unit,
+//    onSettingsClick: () -> Unit,
+//    onNotificationClick: () -> Unit,
+//    onReportClick: () -> Unit
+//) {
+//
+//
+//
+//
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black)
+//    ) {
+//        // Status Bar
+//        StatusBar2(onBackClick = { onBackClick() })
+//
+//
+//        // Your main content goes here (e.g., expenses list)
+//        LoanCalculatorScreen(
+//            onCalculateClick = { amount, term, rate, isAnnuity ->
+//                // Perform the loan calculation here and handle the result
+//            }
+//        )
+//        Spacer(modifier = Modifier.height(40.dp ))
+//        // Bottom Navigation Bar
+//        BottomNavigationBar2(
+//            onItemSelected = { selectedItem ->
+//                // Handle generic item selection if needed
+//            },
+//            onSettingsClick = {
+//                onSettingsClick()
+//            },
+//            onNotificationClick = {
+//                onNotificationClick()
+//            },
+//            onReportClick = {
+//                onReportClick()
+//            }
+//        )
+//    }
+//}
+
+
+@Composable
+fun StatusBar2(onBackClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Back Button
+        Image(
+            painter = painterResource(id = R.drawable.ic_back),
+            contentDescription = "Back Button",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { onBackClick() }
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // Title
+        Text(
+            text = "Loan calculator",
+            color = Color.White,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(start = 70.dp)
+        )
+    }
+}
+
+@Composable
+fun BottomNavigationBar2(
+    onItemSelected: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    onReportClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp) // Add padding from the bottom of the screen
+            .padding(horizontal = 60.dp)
+            .height(64.dp) // Set the height of the navigation bar
+            .background(
+                color = Color.Gray,
+                shape = RoundedCornerShape(50.dp) // Rounded corners
+            ),
+        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Replace each icon with your images
+        val items = listOf(
+            Pair(R.drawable.ic_report, "Report"),
+            Pair(R.drawable.ic_bank_act, "Bank"),
+            Pair(R.drawable.ic_notification, "Notifications"),
+            Pair(R.drawable.ic_settings, "Settings")
+        )
+
+        items.forEach { (imageRes, label) ->
+
+            // Check if it's the selected item to highlight it
+            val isSelected = label == "Bank" // Example: Highlight the "Report" item
+
+            Box(
+                modifier = Modifier
+                    .size(45.dp) // Adjust size to match the rounded background
+                    .background(
+                        if (isSelected) Color(0xFFFCF485) else Color.Transparent, // Highlight the selected item
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+                    .clickable {
+                        when (label) {
+                            "Report" -> onReportClick()
+                            "Notifications" -> onNotificationClick()
+                            "Settings" -> onSettingsClick()
+                            else -> onItemSelected(label)
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = label,
+                    modifier = Modifier.size(49.dp) // Adjust the size to fit within the background
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CalculatorScreen(
+    onBackClick: () -> Unit,
+    onCalculateClick: (amount: Double, term: Int, rate: Double, isAnnuity: Boolean) -> Unit,
+    onSettingsClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    onReportClick: () -> Unit
+) {
+    var creditAmount by remember { mutableStateOf(TextFieldValue("")) }
+    var creditTerm by remember { mutableStateOf(TextFieldValue("")) }
+    var interestRate by remember { mutableStateOf(TextFieldValue("")) }
+    var isAnnuity by remember { mutableStateOf(true) }
+    var monthlyPayment by remember { mutableStateOf("00, 00") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Back Button and Title
+        StatusBar2(onBackClick = onBackClick)
+
+        // Monthly Payment Display
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+                .background(Color(0xFFFCF485), shape = RoundedCornerShape(32.dp))
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Monthly payment:",
+                    color = Color.Black,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = "$ $monthlyPayment",
+                    color = Color.Black,
+                    fontSize = 32.sp
+                )
+            }
+        }
+
+        // Credit Amount Input
+        LoanCalculatorTextField(
+            label = "Amount of credit:",
+            value = creditAmount,
+            onValueChange = { creditAmount = it }
+        )
+
+        // Credit Term Input
+        LoanCalculatorTextField(
+            label = "Credit term",
+            value = creditTerm,
+            onValueChange = { creditTerm = it }
+        )
+
+        // Interest Rate Input
+        LoanCalculatorTextField(
+            label = "Interest rate",
+            value = interestRate,
+            onValueChange = { interestRate = it }
+        )
+
+        // Annuity Checkbox
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            Checkbox(
+                checked = isAnnuity,
+                onCheckedChange = { isAnnuity = it },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color(0xFFFCF485),
+                    uncheckedColor = Color.White
+                )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Type of monthly payments: annuity",
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+
+        // Calculate Button
+        Button(
+            onClick = {
+                val amount = creditAmount.text.replace(",", "").toDoubleOrNull() ?: 0.0
+                val term = creditTerm.text.replace(",", "").toIntOrNull() ?: 0
+                val rate = (interestRate.text.replace(",", "").toDoubleOrNull() ?: 0.0) / 100 / 12
+
+                // Perform the loan calculation here
+                val payment = if (isAnnuity) {
+                    calculateAnnuityPayment(amount, rate, term)
+                } else {
+                    calculateLinearPayment(amount, rate, term)
+                }
+
+                // Update the monthly payment
+                monthlyPayment = String.format("%.2f", payment)
+                onCalculateClick(amount, term, rate, isAnnuity)
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCF485)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            Text(
+                text = "Calculate",
+                color = Color.Black,
+                fontSize = 16.sp
+            )
+        }
+        BottomNavigationBar2(
+            onItemSelected = { selectedItem ->
+                // Handle generic item selection if needed
+            },
+            onSettingsClick = {
+                onSettingsClick()
+            },
+            onNotificationClick = {
+                onNotificationClick()
+            },
+            onReportClick = {
+                onReportClick()
+            }
+        )
+
+    }
+}
+
+@Composable
+fun LoanCalculatorTextField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+                .padding(8.dp),
+            singleLine = true
+        )
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(0xFFFCF485))
+        )
+    }
+}
+
+// Function to calculate annuity (fixed) payment
+fun calculateAnnuityPayment(amount: Double, rate: Double, term: Int): Double {
+    return if (rate == 0.0) {
+        amount / term
+    } else {
+        amount * (rate * (1 + rate).pow(term)) / ((1 + rate).pow(term) - 1)
+    }
+}
+
+// Function to calculate linear (decreasing) payment
+fun calculateLinearPayment(amount: Double, rate: Double, term: Int): Double {
+    return if (rate == 0.0) {
+        amount / term
+    } else {
+        (amount / term) + (amount * rate)
+    }
+}

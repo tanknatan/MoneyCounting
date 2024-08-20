@@ -1,4 +1,4 @@
-package com.my.moneycounting
+package com.my.moneycounting.presentayion
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.my.moneycounting.R
+
 
 @Composable
-fun SecondStepScreen(onContinueClick: () -> Unit) {
+fun FirstStepScreen(onContinueClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +44,7 @@ fun SecondStepScreen(onContinueClick: () -> Unit) {
                 )
 
                 Image(
-                    painter = painterResource(id = R.drawable.image_6), // Replace with the image of the button
+                    painter = painterResource(id = R.drawable.image_5), // Replace with the image of the button
                     contentDescription = "Continue Button",
                     modifier = Modifier
                         .padding(bottom =70.dp) // Increase the padding to lift the button above the curve
@@ -55,7 +57,7 @@ fun SecondStepScreen(onContinueClick: () -> Unit) {
             // Top Section: Expenses List
 
             Image(
-                painter = painterResource(id = R.drawable.text2), // Replace with the correct image resource ID
+                painter = painterResource(id = R.drawable.frame_280), // Replace with the correct image resource ID
                 contentDescription = "Your Expenses",
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
@@ -66,7 +68,7 @@ fun SecondStepScreen(onContinueClick: () -> Unit) {
             // Middle Section: Title and Description
             Spacer(modifier = Modifier.height(20.dp))
             Image(
-                painter = painterResource(id = R.drawable.bt_2), // Replace with the correct image resource ID
+                painter = painterResource(id = R.drawable.frame_282), // Replace with the correct image resource ID
                 contentDescription = "Expense/Income Calculation",
                 modifier = Modifier
                     .padding(horizontal = 16.dp)

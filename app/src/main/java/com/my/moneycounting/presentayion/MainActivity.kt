@@ -1,9 +1,10 @@
-package com.my.moneycounting
+package com.my.moneycounting.presentayion
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
+import com.my.moneycounting.presentayion.navigation.NavigationScreen
 import com.my.moneycounting.ui.theme.MoneyCountingTheme
 
 class MainActivity : ComponentActivity() {
