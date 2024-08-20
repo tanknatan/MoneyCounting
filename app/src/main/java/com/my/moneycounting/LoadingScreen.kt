@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun LoadingScreen() {
+fun LoadingScreen(
+    onBack: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
