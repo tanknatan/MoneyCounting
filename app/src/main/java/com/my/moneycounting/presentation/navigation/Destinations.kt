@@ -1,4 +1,4 @@
-package com.my.moneycounting.presentayion.navigation
+package com.my.moneycounting.presentation.navigation
 
 sealed class Destinations(val route: String) {
 

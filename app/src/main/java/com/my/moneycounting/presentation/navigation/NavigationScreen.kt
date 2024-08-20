@@ -1,4 +1,4 @@
-package com.my.moneycounting.presentayion.navigation
+package com.my.moneycounting.presentation.navigation
 
 
 import androidx.compose.runtime.Composable
@@ -6,30 +6,21 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.compose.ui.platform.LocalContext
-import com.my.moneycounting.presentayion.CalculatorScreen
-import com.my.moneycounting.presentayion.FirstStepScreen
-import com.my.moneycounting.presentayion.LoadingScreen
+import com.my.moneycounting.data.Prefs
+import com.my.moneycounting.presentation.CalculatorScreen
+import com.my.moneycounting.presentation.FirstStepScreen
+import com.my.moneycounting.presentation.LoadingScreen
+import com.my.moneycounting.presentation.MainScreen
+import com.my.moneycounting.presentation.SecondStepScreen
+import com.my.moneycounting.presentation.SettingsScreen
+import com.my.moneycounting.presentation.StartStepScreen
+import com.my.moneycounting.presentation.WelcomeScreen
 
-import com.my.moneycounting.presentayion.MainScreen
-import com.my.moneycounting.presentayion.SecondStepScreen
-import com.my.moneycounting.presentayion.SettingsScreen
-import com.my.moneycounting.presentayion.StartStepScreen
-import com.my.moneycounting.presentayion.WelcomeScreen
-
-fun isStartStepCompleted(context: Context): Boolean {
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    return sharedPreferences.getBoolean("StartStepCompleted", false)
-}
 
 @Composable
 fun NavigationScreen(
     navHostController: NavHostController
 ) {
-    val startStepCompleted = isStartStepCompleted(context = LocalContext.current)
     NavHost(
         navController = navHostController,
         startDestination = Destinations.LoadingScreen.route,
@@ -37,9 +28,7 @@ fun NavigationScreen(
     ) {
         composable(route = Destinations.LoadingScreen.route) {
             LoadingScreen {
-
-
-                if (startStepCompleted) {
+                if (Prefs.startStepCompleted) {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         popUpTo(Destinations.LoadingScreen.route) {
                             inclusive = true

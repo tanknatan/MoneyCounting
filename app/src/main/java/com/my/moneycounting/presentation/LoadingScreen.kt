@@ -1,4 +1,4 @@
-package com.my.moneycounting.presentayion
+package com.my.moneycounting.presentation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
