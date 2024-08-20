@@ -3,7 +3,17 @@ package com.my.moneycounting.presentayion
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,12 +22,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -78,7 +92,7 @@ fun StatusBar2(onBackClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Black)
-            .padding(16.dp),
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Back Button
@@ -180,125 +194,154 @@ fun CalculatorScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Back Button and Title
-        StatusBar2(onBackClick = onBackClick)
-
-        // Monthly Payment Display
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp)
-                .background(Color(0xFFFCF485), shape = RoundedCornerShape(32.dp))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Monthly payment:",
-                    color = Color.Black,
-                    fontSize = 16.sp
-                )
-                Text(
-                    text = "$ $monthlyPayment",
-                    color = Color.Black,
-                    fontSize = 32.sp
-                )
-            }
-        }
-
-        // Credit Amount Input
-        LoanCalculatorTextField(
-            label = "Amount of credit:",
-            value = creditAmount,
-            onValueChange = { creditAmount = it }
-        )
-
-        // Credit Term Input
-        LoanCalculatorTextField(
-            label = "Credit term",
-            value = creditTerm,
-            onValueChange = { creditTerm = it }
-        )
-
-        // Interest Rate Input
-        LoanCalculatorTextField(
-            label = "Interest rate",
-            value = interestRate,
-            onValueChange = { interestRate = it }
-        )
-
-        // Annuity Checkbox
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-        ) {
-            Checkbox(
-                checked = isAnnuity,
-                onCheckedChange = { isAnnuity = it },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = Color(0xFFFCF485),
-                    uncheckedColor = Color.White
-                )
+        // Background Image that starts at the top of the screen
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(id = R.drawable.bg2), // Replace with the correct image resource ID
+                contentDescription = "Background Curve",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(360.dp) // Adjust the height as needed
+                    .align(Alignment.TopCenter)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Type of monthly payments: annuity",
-                color = Color.White,
-                fontSize = 14.sp
-            )
-        }
 
-        // Calculate Button
-        Button(
-            onClick = {
-                val amount = creditAmount.text.replace(",", "").toDoubleOrNull() ?: 0.0
-                val term = creditTerm.text.replace(",", "").toIntOrNull() ?: 0
-                val rate = (interestRate.text.replace(",", "").toDoubleOrNull() ?: 0.0) / 100 / 12
+            // Column for the content overlaying the background image
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 0.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Status Bar at the top
+                StatusBar2(onBackClick = onBackClick)
 
-                // Perform the loan calculation here
-                val payment = if (isAnnuity) {
-                    calculateAnnuityPayment(amount, rate, term)
-                } else {
-                    calculateLinearPayment(amount, rate, term)
+                // Spacer to add space between StatusBar2 and the content
+                Spacer(modifier = Modifier.height(0.dp))
+
+                // Box containing the monthly payment information
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp)
+                        .background(Color(0xFFFCF485), shape = RoundedCornerShape(32.dp))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Monthly payment:",
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "$ $monthlyPayment",
+                            color = Color.Black,
+                            fontSize = 32.sp
+                        )
+                    }
                 }
 
-                // Update the monthly payment
-                monthlyPayment = String.format("%.2f", payment)
-                onCalculateClick(amount, term, rate, isAnnuity)
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCF485)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-        ) {
-            Text(
-                text = "Calculate",
-                color = Color.Black,
-                fontSize = 16.sp
-            )
-        }
-        BottomNavigationBar2(
-            onItemSelected = { selectedItem ->
-                // Handle generic item selection if needed
-            },
-            onSettingsClick = {
-                onSettingsClick()
-            },
-            onNotificationClick = {
-                onNotificationClick()
-            },
-            onReportClick = {
-                onReportClick()
-            }
-        )
+                // Spacer to add some space between the Box and the rest of the content
+                Spacer(modifier = Modifier.height(24.dp))
 
+                // Credit Amount Input
+                LoanCalculatorTextField(
+                    label = "Amount of credit:",
+                    value = creditAmount,
+                    onValueChange = { creditAmount = it }
+                )
+
+                // Credit Term Input
+                LoanCalculatorTextField(
+                    label = "Credit term",
+                    value = creditTerm,
+                    onValueChange = { creditTerm = it }
+                )
+
+                // Interest Rate Input
+                LoanCalculatorTextField(
+                    label = "Interest rate",
+                    value = interestRate,
+                    onValueChange = { interestRate = it }
+                )
+
+                // Annuity Checkbox
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    Checkbox(
+                        checked = isAnnuity,
+                        onCheckedChange = { isAnnuity = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFFFCF485),
+                            uncheckedColor = Color.White
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Type of monthly payments: annuity",
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                }
+
+                // Calculate Button
+                Button(
+                    onClick = {
+                        val amount = creditAmount.text.replace(",", "").toDoubleOrNull() ?: 0.0
+                        val term = creditTerm.text.replace(",", "").toIntOrNull() ?: 0
+                        val rate = (interestRate.text.replace(",", "").toDoubleOrNull() ?: 0.0) / 100 / 12
+
+                        // Perform the loan calculation here
+                        val payment = if (isAnnuity) {
+                            calculateAnnuityPayment(amount, rate, term)
+                        } else {
+                            calculateLinearPayment(amount, rate, term)
+                        }
+
+                        // Update the monthly payment
+                        monthlyPayment = String.format("%.2f", payment)
+                        onCalculateClick(amount, term, rate, isAnnuity)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCF485)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    Text(
+                        text = "Calculate",
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+                }
+
+                // Bottom Navigation Bar
+                BottomNavigationBar2(
+                    onItemSelected = { selectedItem ->
+                        // Handle generic item selection if needed
+                    },
+                    onSettingsClick = {
+                        onSettingsClick()
+                    },
+                    onNotificationClick = {
+                        onNotificationClick()
+                    },
+                    onReportClick = {
+                        onReportClick()
+                    }
+                )
+            }
+        }
     }
+
+
 }
+
 
 @Composable
 fun LoanCalculatorTextField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
@@ -315,6 +358,8 @@ fun LoanCalculatorTextField(label: String, value: TextFieldValue, onValueChange:
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
             ),
+            textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
+            cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White), // Set the cursor color
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Transparent)
