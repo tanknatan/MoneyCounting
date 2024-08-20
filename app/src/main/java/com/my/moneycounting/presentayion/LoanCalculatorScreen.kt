@@ -246,11 +246,12 @@ fun CalculatorScreen(
                 // Spacer to add some space between the Box and the rest of the content
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Credit Amount Input
+                // Credit Amount Input with $ prefix
                 LoanCalculatorTextField(
                     label = "Amount of credit:",
                     value = creditAmount,
-                    onValueChange = { creditAmount = it }
+                    onValueChange = { creditAmount = it },
+                    prefix = "$"
                 )
 
                 // Credit Term Input
@@ -260,11 +261,12 @@ fun CalculatorScreen(
                     onValueChange = { creditTerm = it }
                 )
 
-                // Interest Rate Input
+                // Interest Rate Input with % suffix
                 LoanCalculatorTextField(
                     label = "Interest rate",
                     value = interestRate,
-                    onValueChange = { interestRate = it }
+                    onValueChange = { interestRate = it },
+                    suffix = "%"
                 )
 
                 // Annuity Checkbox
@@ -343,8 +345,15 @@ fun CalculatorScreen(
 }
 
 
+
 @Composable
-fun LoanCalculatorTextField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
+fun LoanCalculatorTextField(
+    label: String,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    prefix: String = "",
+    suffix: String = ""
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
@@ -353,13 +362,20 @@ fun LoanCalculatorTextField(label: String, value: TextFieldValue, onValueChange:
             modifier = Modifier.padding(bottom = 8.dp)
         )
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = TextFieldValue(
+                text = "$prefix${value.text}$suffix",
+                selection = value.selection
+            ),
+            onValueChange = {
+                // Ensure only the number part is editable
+                val newText = it.text.removePrefix(prefix).removeSuffix(suffix)
+                onValueChange(TextFieldValue(newText, it.selection))
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
             ),
             textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-            cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White), // Set the cursor color
+            cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White),
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Transparent)

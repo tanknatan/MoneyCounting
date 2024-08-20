@@ -47,7 +47,7 @@ fun FirstStepScreen(onContinueClick: () -> Unit) {
                     painter = painterResource(id = R.drawable.image_5), // Replace with the image of the button
                     contentDescription = "Continue Button",
                     modifier = Modifier
-                        .padding(bottom =70.dp) // Increase the padding to lift the button above the curve
+                        .padding(bottom = 70.dp) // Increase the padding to lift the button above the curve
                         .width(440.dp)
                         .height(240.dp)
                         .align(Alignment.BottomCenter)
