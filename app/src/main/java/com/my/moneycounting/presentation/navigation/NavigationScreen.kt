@@ -11,6 +11,8 @@ import com.my.moneycounting.presentation.CalculatorScreen
 import com.my.moneycounting.presentation.FirstStepScreen
 import com.my.moneycounting.presentation.LoadingScreen
 import com.my.moneycounting.presentation.MainScreen
+import com.my.moneycounting.presentation.NewsScreen
+import com.my.moneycounting.presentation.NewsViewModel
 import com.my.moneycounting.presentation.SecondStepScreen
 import com.my.moneycounting.presentation.SettingsScreen
 import com.my.moneycounting.presentation.StartStepScreen
@@ -19,7 +21,7 @@ import com.my.moneycounting.presentation.WelcomeScreen
 
 @Composable
 fun NavigationScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     NavHost(
         navController = navHostController,
@@ -94,7 +96,14 @@ fun NavigationScreen(
                         }
                     }
                 },
-                onNotificationClick = {},
+                onNotificationClick = {
+                    navHostController.navigate(Destinations.NewsScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.SettingsScreen.route) {
+
+                        }
+                    }
+                },
                 onBankClick = {
                     navHostController.navigate(Destinations.CalculatorScreen.route) {
                         launchSingleTop = true
@@ -112,7 +121,14 @@ fun NavigationScreen(
                 onBackClick = {
                     navHostController.navigateUp()
                 },
-                onNotificationClick = {},
+                onNotificationClick = {
+                    navHostController.navigate(Destinations.NewsScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.SettingsScreen.route) {
+
+                        }
+                    }
+                },
                 onReportClick = {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         launchSingleTop = true
@@ -148,7 +164,14 @@ fun NavigationScreen(
                         }
                     }
                 },
-                onNotificationClick = { /*TODO*/ },
+                onNotificationClick = {
+                    navHostController.navigate(Destinations.NewsScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.SettingsScreen.route) {
+
+                        }
+                    }
+                },
                 onReportClick = {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         launchSingleTop = true
@@ -163,6 +186,40 @@ fun NavigationScreen(
                 }
             )
 
+        }
+        composable(route = Destinations.NewsScreen.route) {
+            NewsScreen(
+                viewModel = NewsViewModel(),
+                onSettingsClick = {
+                    navHostController.navigate(Destinations.SettingsScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.MainScreen.route) {
+
+                        }
+                    }
+                },
+                onReportClick = {
+                    navHostController.navigate(Destinations.MainScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.SettingsScreen.route) {
+
+                        }
+                    }
+                },
+                onBankClick = {
+                    navHostController.navigate(Destinations.CalculatorScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.MainScreen.route) {
+
+                        }
+                    }
+                },
+                onBackClick = {
+                    navHostController.navigateUp()
+                },
+
+
+            )
         }
     }
 }

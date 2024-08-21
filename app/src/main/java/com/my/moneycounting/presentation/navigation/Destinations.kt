@@ -10,6 +10,7 @@ sealed class Destinations(val route: String) {
     data object MainScreen : Destinations("main_screen")
     data object SettingsScreen : Destinations("settings_screen")
     data object CalculatorScreen : Destinations("loan_calculator_screen")
+    data object NewsScreen : Destinations("news_screen")
 
     data object AddTransactionScreen : Destinations("add_transaction_screen")
     data object EditTransactionScreen : Destinations("edit_transaction_screen")

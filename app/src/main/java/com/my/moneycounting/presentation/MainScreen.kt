@@ -133,7 +133,7 @@ fun BottomNavigationBar1(
                     )
                     .clickable {
                         when (label) {
-                            "Report" -> onNotificationClick()
+                            "Notifications" -> onNotificationClick()
                             "Bank" -> onBankClick()
                             "Settings" -> onSettingsClick()
                             else -> onItemSelected(label)
