@@ -3,6 +3,7 @@ package com.my.moneycounting.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,6 +24,7 @@ import com.my.moneycounting.presentation.WelcomeScreen
 fun NavigationScreen(
     navHostController: NavHostController,
 ) {
+    val newsViewModel: NewsViewModel = viewModel()
     NavHost(
         navController = navHostController,
         startDestination = Destinations.LoadingScreen.route,
@@ -189,7 +191,7 @@ fun NavigationScreen(
         }
         composable(route = Destinations.NewsScreen.route) {
             NewsScreen(
-                viewModel = NewsViewModel(),
+                viewModel = newsViewModel,
                 onSettingsClick = {
                     navHostController.navigate(Destinations.SettingsScreen.route) {
                         launchSingleTop = true
