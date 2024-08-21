@@ -2,19 +2,15 @@ package com.my.moneycounting.presentation
 
 import android.content.Intent
 import android.net.Uri
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,12 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.my.moneycounting.R
 import com.my.moneycounting.data.NewsArticle
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -154,10 +148,10 @@ fun NewsItem(article: NewsArticle) {
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
+                .padding(start = 16.dp)
                 .background(Color(0xFFA7F3D0), shape = RoundedCornerShape(12.dp))
                 .padding(horizontal = 8.dp, vertical = 4.dp)
                 .align(Alignment.Start)
-                .padding(start = 16.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -174,33 +168,25 @@ fun NewsItem(article: NewsArticle) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Read more button
-        Button(
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.Start)  // Align the button to the left
+                .padding(16.dp)
+                .width(123.dp)
+                .height(40.dp),
             onClick = {
                 // Open the article URL in the browser
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
                 context.startActivity(intent)
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFEB3B)),
-            modifier = Modifier
-                .align(Alignment.Start)  // Align the button to the left
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(50))
-        ) {
-            Text(text = "Read more", color = Color.Black)
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(
-
-
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = "Arrow",
-                    modifier = Modifier
-                        .size(25.dp)
-
-                )
             }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_read_more_button),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentScale = ContentScale.FillWidth
+            )
         }
     }
 }
@@ -238,14 +224,14 @@ fun BottomNavigationBar3(
         items.forEach { (imageRes, label) ->
             val isSelected = label == "Notifications"
 
-            Box(
+            IconButton(
                 modifier = Modifier
                     .size(45.dp)
                     .background(
                         if (isSelected) Color(0xFFFCF485) else Color.Transparent,
                         shape = androidx.compose.foundation.shape.CircleShape
-                    )
-                    .clickable {
+                    ),
+                onClick = {
                         when (label) {
                             "Report" -> onReportClick()
                             "Bank" -> onBankClick()
@@ -253,14 +239,12 @@ fun BottomNavigationBar3(
                             else -> onItemSelected(label)
                         }
                     },
-                contentAlignment = Alignment.Center
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(49.dp)
-
-
+                    modifier = Modifier.size(43.dp), // Adjust the size to fit within the background,
+                    tint = Color.Unspecified
                 )
             }
         }

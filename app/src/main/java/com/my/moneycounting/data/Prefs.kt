@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 object Prefs {
     private lateinit var prefs: SharedPreferences
 
-    private val KEY_START_STEP_COMPLETED = "StartStepCompleted"
+    private const val KEY_START_STEP_COMPLETED = "StartStepCompleted"
 
     var startStepCompleted: Boolean
         get() = prefs.getBoolean(KEY_START_STEP_COMPLETED, false)

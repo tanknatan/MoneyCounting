@@ -25,6 +25,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -565,14 +567,14 @@ fun BottomNavigationBar2(
             // Check if it's the selected item to highlight it
             val isSelected = label == "Bank" // Example: Highlight the "Report" item
 
-            Box(
+            IconButton(
                 modifier = Modifier
                     .size(45.dp)
                     .background(
                         if (isSelected) Color(0xFFFCF485) else Color.Transparent,
                         shape = CircleShape
-                    )
-                    .clickable {
+                    ) ,
+                onClick = {
                         when (label) {
                             "Report" -> onReportClick()
                             "Notifications" -> onNotificationClick()
@@ -580,12 +582,12 @@ fun BottomNavigationBar2(
                             else -> onItemSelected(label)
                         }
                     },
-                contentAlignment = Alignment.Center
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(49.dp)
+                    modifier = Modifier.size(43.dp),
+                    tint = Color.Unspecified
                 )
             }
         }

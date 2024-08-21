@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,9 +50,7 @@ fun SettingsScreen(
             onBackClick()
         })
 
-        Spacer(modifier = Modifier.height(100.dp))
-
-        // Add Buttons for Terms and Conditions and Privacy Policy
+        Spacer(modifier = Modifier.weight(1f))
         SettingsButton(
             text = "Terms and conditions",
             onClick = {onTermsClick()}
@@ -177,27 +177,27 @@ fun BottomNavigationBar4(
             // Check if it's the selected item to highlight it
             val isSelected = label == "Settings" // Example: Highlight the "Settings" item
 
-            Box(
+            IconButton(
                 modifier = Modifier
                     .size(45.dp) // Adjust size to match the rounded background
                     .background(
                         if (isSelected) Color(0xFFFCF485) else Color.Transparent, // Highlight the selected item
                         shape = androidx.compose.foundation.shape.CircleShape
-                    )
-                    .clickable {
+                    ),
+                onClick =  {
                         when (label) {
                             "Report" -> onReportClick()
                             "Bank" -> onBankClick()
                             "Notifications" -> onNotificationClick()
                             else -> onItemSelected(label)
                         }
-                    },
-                contentAlignment = Alignment.Center
+                    }
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(49.dp) // Adjust the size to fit within the background
+                    modifier = Modifier.size(43.dp), // Adjust the size to fit within the background,
+                    tint = Color.Unspecified
                 )
             }
         }

@@ -19,6 +19,7 @@ import com.my.moneycounting.presentation.NewsViewModel
 import com.my.moneycounting.presentation.SecondStepScreen
 import com.my.moneycounting.presentation.SettingsScreen
 import com.my.moneycounting.presentation.StartStepScreen
+import com.my.moneycounting.presentation.WebViewScreen
 import com.my.moneycounting.presentation.WelcomeScreen
 
 
@@ -152,8 +153,22 @@ fun NavigationScreen(
                     }
 
                 },
-                onTermsClick = {},
-                onPrivacyClick = {}
+                onTermsClick = {
+                    navHostController.navigate(Destinations.TermsAndConditionsScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.MainScreen.route) {
+
+                        }
+                    }
+                },
+                onPrivacyClick = {
+                    navHostController.navigate(Destinations.PrivacyPolicyScreen.route) {
+                        launchSingleTop = true
+                        popUpTo(Destinations.MainScreen.route) {
+
+                        }
+                    }
+                }
 
             )
         }
@@ -223,9 +238,13 @@ fun NavigationScreen(
                 onBackClick = {
                     navHostController.navigateUp()
                 },
-
-
             )
+        }
+        composable(route = Destinations.TermsAndConditionsScreen.route) {
+            WebViewScreen(url = "https://www.google.com/")
+        }
+        composable(route = Destinations.PrivacyPolicyScreen.route) {
+            WebViewScreen(url = "https://www.google.com/")
         }
     }
 }

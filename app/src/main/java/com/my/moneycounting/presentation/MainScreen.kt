@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -124,27 +126,27 @@ fun BottomNavigationBar1(
             // Check if it's the selected item to highlight it
             val isSelected = label == "Report" // Example: Highlight the "Report" item
 
-            Box(
+            IconButton(
                 modifier = Modifier
                     .size(45.dp) // Adjust size to match the rounded background
                     .background(
                         if (isSelected) Color(0xFFFCF485) else Color.Transparent, // Highlight the selected item
                         shape = androidx.compose.foundation.shape.CircleShape
-                    )
-                    .clickable {
+                    ),
+                onClick = {
                         when (label) {
                             "Notifications" -> onNotificationClick()
                             "Bank" -> onBankClick()
                             "Settings" -> onSettingsClick()
                             else -> onItemSelected(label)
                         }
-                    },
-                contentAlignment = Alignment.Center
+                    }
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(49.dp) // Adjust the size to fit within the background
+                    modifier = Modifier.size(43.dp), // Adjust the size to fit within the background,
+                    tint = Color.Unspecified
                 )
             }
         }
