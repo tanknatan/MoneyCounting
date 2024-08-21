@@ -1,6 +1,8 @@
 package com.my.moneycounting.presentation.navigation
 
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +30,9 @@ fun NavigationScreen(
     NavHost(
         navController = navHostController,
         startDestination = Destinations.LoadingScreen.route,
-        modifier = Modifier
+        modifier = Modifier,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
     ) {
         composable(route = Destinations.LoadingScreen.route) {
             LoadingScreen {
