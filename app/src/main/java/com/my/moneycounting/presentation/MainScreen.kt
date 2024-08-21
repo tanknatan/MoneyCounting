@@ -89,6 +89,7 @@ fun StatusBar1(onBackClick: () -> Unit) {
             modifier = Modifier.padding(start = 70.dp)
 
 
+
         )
     }
 }
@@ -130,7 +131,7 @@ fun BottomNavigationBar1(
                 modifier = Modifier
                     .size(45.dp) // Adjust size to match the rounded background
                     .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Transparent, // Highlight the selected item
+                        if (isSelected) Color(0xFFFCF485) else Color.Black, // Highlight the selected item
                         shape = androidx.compose.foundation.shape.CircleShape
                     ),
                 onClick = {
@@ -145,7 +146,7 @@ fun BottomNavigationBar1(
                 Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(43.dp), // Adjust the size to fit within the background,
+                    modifier = Modifier.size(33.dp), // Adjust the size to fit within the background,
                     tint = Color.Unspecified
                 )
             }

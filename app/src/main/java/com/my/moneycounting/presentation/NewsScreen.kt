@@ -228,7 +228,7 @@ fun BottomNavigationBar3(
                 modifier = Modifier
                     .size(45.dp)
                     .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Transparent,
+                        if (isSelected) Color(0xFFFCF485) else Color.Black,
                         shape = androidx.compose.foundation.shape.CircleShape
                     ),
                 onClick = {
@@ -243,7 +243,7 @@ fun BottomNavigationBar3(
                 Icon(
                     painter = painterResource(id = imageRes),
                     contentDescription = label,
-                    modifier = Modifier.size(43.dp), // Adjust the size to fit within the background,
+                    modifier = Modifier.size(33.dp), // Adjust the size to fit within the background,
                     tint = Color.Unspecified
                 )
             }

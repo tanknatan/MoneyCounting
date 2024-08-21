@@ -94,6 +94,7 @@ fun NavigationScreen(
         composable(route = Destinations.MainScreen.route) {
             MainScreen(
                 onBackClick = {
+                    navHostController.navigateUp()
                 },
                 onSettingsClick = {
                     navHostController.navigate(Destinations.SettingsScreen.route) {
