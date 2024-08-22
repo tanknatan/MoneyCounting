@@ -62,7 +62,8 @@ fun NewsScreen(
         }
 
         // Status Bar at the top
-        StatusBar3(
+        StatusBar(
+            info = "Finance News",
             modifier = Modifier
                 .align(Alignment.TopCenter),
             onBackClick = onBackClick
@@ -80,39 +81,7 @@ fun NewsScreen(
     }
 }
 
-@Composable
-fun StatusBar3(
-    modifier: Modifier = Modifier,
-    onBackClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.8f))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Back Button
-        Image(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back Button",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { onBackClick() }
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Title
-        Text(
-            text = "Finance News",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 68.dp)
-        )
-    }
-}
 
 
 @OptIn(ExperimentalCoilApi::class)

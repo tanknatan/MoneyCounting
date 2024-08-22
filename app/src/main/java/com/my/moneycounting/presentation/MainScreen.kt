@@ -1,5 +1,9 @@
 package com.my.moneycounting.presentation
 
+import android.text.TextUtils
+import android.util.Log
+import androidx.compose.runtime.*
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,25 +31,74 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.my.moneycounting.R
+import com.my.moneycounting.data.Transaction
+import com.my.moneycounting.data.TransactionDao
 
+class TransactionViewModel(private val dao: TransactionDao) : ViewModel() {
+    val transactions: State<List<Transaction>> = dao.getTransactionsByType("Expense").collectAsState(initial = emptyList())
+
+    // You can also add functions to add new transactions, delete them, etc.
+}
 @Composable
-fun MainScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit, onNotificationClick: () -> Unit, onBankClick: () -> Unit) {
-    Column(
+fun MainScreen(viewModel: TransactionViewModel = viewModel()) {
+    val transactions by viewModel.transactions
+
+    val donutChartData = PieChartData(
+        slices = currentItems.map {
+            PieChartData.Slice(
+                label = it.title,
+                value = ((it.amount.toFloat() / currentItems.sumOf { it.amount }) * 100).also {
+                    Log.d("TAG", "donutChartData: $it")
+                },
+                color = Color(it.color)
+            )
+        },
+        plotType = PlotType.Pie
+    )
+    val donutChartConfig = PieChartConfig(
+        labelVisible = true,
+        labelFontSize = 32.sp,
+        strokeWidth = 120f,
+        labelColor = Color.Black,
+        activeSliceAlpha = 0.9f,
+        isAnimationEnable = true,
+        backgroundColor = MainBlue,
+        showSliceLabels = true,
+        sliceLabelEllipsizeAt = TextUtils.TruncateAt.END
+    )
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        // Status Bar
-        StatusBar1(onBackClick = {
-            onBackClick()
-        })
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            StatusBar(            info = "Your expenses",
+                onBackClick = {
+                    onBackClick()
+                })
+            Spacer(modifier = Modifier.height(16.dp))
+            DonutPieChart(modifier = Modifier
+                .size(220.dp),
+                pieChartData = donutChartData,
+                pieChartConfig = donutChartConfig)
+            Spacer(modifier = Modifier.height(16.dp))
+            PeriodSelectionButtons()
+            Spacer(modifier = Modifier.height(16.dp))
+            IncomeExpenseToggle()
+            Spacer(modifier = Modifier.height(16.dp))
+            AddOperationButton()
+            Spacer(modifier = Modifier.height(16.dp))
+            ExpenseList(transactions)
+        }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Your main content goes here (e.g., expenses list)
-
-        // Bottom Navigation Bar
+        // BottomNavigationBar поверх остальных элементов
         BottomNavigationBar1(
             onItemSelected = { selectedItem ->
                 // Handle generic item selection if needed
@@ -61,38 +116,43 @@ fun MainScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit, onNotificat
     }
 }
 
-@Composable
-fun StatusBar1(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Back Button
-        Image(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back Button",
+//@Composable
+//fun MainScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit, onNotificationClick: () -> Unit, onBankClick: () -> Unit) {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.Black)
+//    ) {
+//        // Status Bar
+//        StatusBar(
+//            info = "Your expenses",
+//            onBackClick = {
+//            onBackClick()
+//        })
+//
+//        Spacer(modifier = Modifier.weight(1f))
+//
+//        // Your main content goes here (e.g., expenses list)
+//
+//        // Bottom Navigation Bar
+//        BottomNavigationBar1(
+//            onItemSelected = { selectedItem ->
+//                // Handle generic item selection if needed
+//            },
+//            onSettingsClick = {
+//                onSettingsClick()
+//            },
+//            onNotificationClick = {
+//                onNotificationClick()
+//            },
+//            onBankClick = {
+//                onBankClick()
+//            }
+//        )
+//    }
+//}
 
-            modifier = Modifier.size(40.dp) // Adjust the size to fit within the background
-                .clickable { onBackClick() }
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Title
-        Text(
-            text = "Your expenses",
-            color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(start = 70.dp)
-
-
-
-        )
-    }
-}
 
 @Composable
 fun BottomNavigationBar1(
@@ -156,32 +216,30 @@ fun BottomNavigationBar1(
 
 
 @Composable
-fun ExpenseItem(iconRes: Int, label: String, amount: Int, percentage: Int) {
+fun ExpenseList(transactions: List<Transaction>) {
+    LazyColumn {
+        items(transactions) { transaction ->
+            ExpenseItem(transaction)
+        }
+    }
+}
+
+@Composable
+fun ExpenseItem(transaction: Transaction) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = "$label Icon",
-            modifier = Modifier.size(40.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = label,
-            color = Color.White,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "$$amount",
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "$percentage%",
-            color = Color.Gray
+        Text(transaction.category, color = Color.White)
+        Text("\$${transaction.amount}", color = Color.White)
+        // Assuming transaction.color is an ARGB color value
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .background(Color(transaction.color))
         )
     }
 }
+

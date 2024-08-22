@@ -10,6 +10,7 @@ data class Transaction(
     val type: String, // "Income" or "Expense"
     val category: String, // Type of income or expense (e.g., "Food", "Salary")
     val amount: Double, // Amount of the transaction
-    val date: Date // Date of the transaction
+    val date: Date, // Date of the transaction
+    val color : Int
 )
 

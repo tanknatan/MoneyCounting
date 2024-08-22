@@ -46,7 +46,9 @@ fun SettingsScreen(
             .background(Color.Black)
     ) {
         // Status Bar
-        StatusBar4(onBackClick = {
+        StatusBar(
+            info = "Settings",
+            onBackClick = {
             onBackClick()
         })
 
@@ -81,36 +83,7 @@ fun SettingsScreen(
     }
 }
 
-@Composable
-fun StatusBar4(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Back Button
-        Image(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back Button",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { onBackClick() } // Added click action for the back button
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Title
-        Text(
-            text = "Settings",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 95.dp)
-        )
-    }
-}
 
 @Composable
 fun SettingsButton(text: String, onClick: () -> Unit) {

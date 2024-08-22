@@ -50,7 +50,9 @@ fun AddIncomeScreen(onBackClick: () -> Unit) {
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        StatusBar12(onBackClick = onBackClick)
+        StatusBar(
+            info = "Add Income",
+            onBackClick = onBackClick)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -177,38 +179,7 @@ fun AmountInputField() {
     )
 }
 
-@Composable
-fun StatusBar12(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-            .padding(0.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Back Button
-        Image(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back Button",
 
-            modifier = Modifier.size(40.dp) // Adjust the size to fit within the background
-                .clickable { onBackClick() }
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Title
-        Text(
-            text = "Add Income",
-            color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(start = 70.dp)
-
-
-
-        )
-    }
-}
 @Preview
 @Composable
 fun AddIncomeScreenPreview() {

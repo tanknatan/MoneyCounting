@@ -48,35 +48,8 @@ import kotlin.math.pow
 
 
 
-@Composable
-fun StatusBar2(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-//            .background(Color.Black)
-            .padding(start = 0.dp, top = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Back Button
-        Image(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back Button",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { onBackClick() }
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
 
-        // Title
-        Text(
-            text = "Loan calculator",
-            color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(start = 55.dp)
-        )
-    }
-}
 
 
 @Composable
@@ -119,7 +92,10 @@ fun CalculatorScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Status Bar at the top
-            StatusBar2(onBackClick = onBackClick)
+            StatusBar(
+                info = "Loan calculator",
+
+                onBackClick = onBackClick)
 
             Spacer(modifier = Modifier.height(10.dp))
 
