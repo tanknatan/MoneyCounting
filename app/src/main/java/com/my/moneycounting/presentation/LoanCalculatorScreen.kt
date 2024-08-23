@@ -130,7 +130,7 @@ fun CalculatorScreen(
                 label = "Amount of credit:",
                 value = creditAmount,
                 onValueChange = { creditAmount = it },
-                prefix = "$"
+                suffix = "$"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -312,14 +312,14 @@ fun LoanCalculatorTextField(
             modifier = Modifier.padding(bottom = 8.dp)
         )
         BasicTextField(
-            value = TextFieldValue(
-                text = "$prefix${value.text}$suffix",
-                selection = value.selection
+            value = value.copy(
+                text = "$prefix${value.text}$suffix"
             ),
             onValueChange = {
                 // Ensure only the number part is editable
-                val newText = it.text.removePrefix(prefix).removeSuffix(suffix)
-                onValueChange(TextFieldValue(newText, it.selection))
+                val newText = it.text.removeSuffix(suffix).removePrefix(prefix)
+                // Update the text field with the new value without adding prefix and suffix
+                onValueChange(it.copy(text = newText))
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -340,6 +340,7 @@ fun LoanCalculatorTextField(
         )
     }
 }
+
 
 // Function to calculate annuity (fixed) payment
 fun calculateAnnuityPayment(amount: Double, rate: Double, term: Int): Double {
