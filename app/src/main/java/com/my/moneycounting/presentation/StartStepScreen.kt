@@ -29,7 +29,7 @@ fun StartStepScreen(onContinueClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(black),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(

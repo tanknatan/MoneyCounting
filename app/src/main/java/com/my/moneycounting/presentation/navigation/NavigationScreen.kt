@@ -10,6 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.my.moneycounting.data.Prefs
+import com.my.moneycounting.presentation.AddExpensesScreen
+import com.my.moneycounting.presentation.AddIncomeScreen
 import com.my.moneycounting.presentation.CalculatorScreen
 import com.my.moneycounting.presentation.FirstStepScreen
 import com.my.moneycounting.presentation.LoadingScreen
@@ -119,9 +121,10 @@ fun NavigationScreen(
 
                         }
                     }
-
                 },
-
+                onAddTransaction = { type ->
+                    navHostController.navigate("${Destinations.AddTransactionScreen.route}/$type")
+                }
                 )
         }
         composable(route = Destinations.SettingsScreen.route) {
@@ -246,6 +249,19 @@ fun NavigationScreen(
         }
         composable(route = Destinations.PrivacyPolicyScreen.route) {
             WebViewScreen(url = "https://www.google.com/")
+        }
+        composable(route = Destinations.AddTransactionScreen.route + "/{type}") {
+            val type = it.arguments?.getString("type")
+            if (type == "Expenses") {
+                AddExpensesScreen {
+                    navHostController.navigateUp()
+                }
+            }
+            else {
+                AddIncomeScreen {
+                    navHostController.navigateUp()
+                }
+            }
         }
     }
 }

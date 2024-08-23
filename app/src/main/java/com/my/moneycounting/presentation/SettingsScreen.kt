@@ -43,7 +43,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(black)
     ) {
         // Status Bar
         StatusBar(
@@ -66,7 +66,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         // Bottom Navigation Bar
-        BottomNavigationBar4(
+        BottomNavigationBar(
             onItemSelected = { selectedItem ->
                 // Handle generic item selection if needed
             },
@@ -78,7 +78,9 @@ fun SettingsScreen(
             },
             onBankClick = {
                 onBankClick()
-            }
+            },
+            onSettingsClick = {},
+            selectedItem = "Settings"
         )
     }
 }
@@ -105,7 +107,7 @@ fun SettingsButton(text: String, onClick: () -> Unit) {
             Text(
                 text = text,
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = black,
                 fontWeight = FontWeight.Bold
             )
             Image(
@@ -113,66 +115,6 @@ fun SettingsButton(text: String, onClick: () -> Unit) {
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
-        }
-    }
-}
-
-@Composable
-fun BottomNavigationBar4(
-    onItemSelected: (String) -> Unit,
-    onReportClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onBankClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp) // Add padding from the bottom of the screen
-            .padding(horizontal = 60.dp)
-            .height(64.dp) // Set the height of the navigation bar
-            .background(
-                color = Color.Gray,
-                shape = RoundedCornerShape(50.dp) // Rounded corners
-            ),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Replace each icon with your images
-        val items = listOf(
-            Pair(R.drawable.ic_report, "Report"),
-            Pair(R.drawable.ic_bank, "Bank"),
-            Pair(R.drawable.ic_notification, "Notifications"),
-            Pair(R.drawable.ic_settings_act, "Settings")
-        )
-
-        items.forEach { (imageRes, label) ->
-
-            // Check if it's the selected item to highlight it
-            val isSelected = label == "Settings" // Example: Highlight the "Settings" item
-
-            IconButton(
-                modifier = Modifier
-                    .size(45.dp) // Adjust size to match the rounded background
-                    .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Black, // Highlight the selected item
-                        shape = androidx.compose.foundation.shape.CircleShape
-                    ),
-                onClick =  {
-                        when (label) {
-                            "Report" -> onReportClick()
-                            "Bank" -> onBankClick()
-                            "Notifications" -> onNotificationClick()
-                            else -> onItemSelected(label)
-                        }
-                    }
-            ) {
-                Icon(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = label,
-                    modifier = Modifier.size(33.dp), // Adjust the size to fit within the background,
-                    tint = Color.Unspecified
-                )
-            }
         }
     }
 }

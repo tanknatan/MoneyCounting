@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,7 +42,7 @@ fun NewsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(black)
     ) {
         // News list content
         LazyColumn(
@@ -70,13 +69,15 @@ fun NewsScreen(
         )
 
         // Bottom Navigation Bar at the bottom
-        BottomNavigationBar3(
+        BottomNavigationBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
+            selectedItem = "Notifications",
             onItemSelected = { },
             onSettingsClick = onSettingsClick,
             onReportClick = onReportClick,
-            onBankClick = onBankClick
+            onBankClick = onBankClick,
+            onNotificationClick = { }
         )
     }
 }
@@ -113,7 +114,7 @@ fun NewsItem(article: NewsArticle) {
         // Date Badge
         Text(
             text = dateFormat.format(date),
-            color = Color.Black,
+            color = black,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -156,66 +157,6 @@ fun NewsItem(article: NewsArticle) {
                     .fillMaxSize(),
                 contentScale = ContentScale.FillWidth
             )
-        }
-    }
-}
-
-
-
-@Composable
-fun BottomNavigationBar3(
-    modifier: Modifier = Modifier,
-    onItemSelected: (String) -> Unit,
-    onSettingsClick: () -> Unit,
-    onReportClick: () -> Unit,
-    onBankClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp) // Add padding from the bottom of the screen
-            .padding(horizontal = 60.dp)
-            .height(64.dp) // Set the height of the navigation bar
-            .background(
-                color = Color.Gray,
-                shape = RoundedCornerShape(50.dp) // Rounded corners
-            ),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val items = listOf(
-            Pair(R.drawable.ic_report, "Report"),
-            Pair(R.drawable.ic_bank, "Bank"),
-            Pair(R.drawable.ic_notification_act, "Notifications"),
-            Pair(R.drawable.ic_settings, "Settings")
-        )
-
-        items.forEach { (imageRes, label) ->
-            val isSelected = label == "Notifications"
-
-            IconButton(
-                modifier = Modifier
-                    .size(45.dp)
-                    .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Black,
-                        shape = androidx.compose.foundation.shape.CircleShape
-                    ),
-                onClick = {
-                        when (label) {
-                            "Report" -> onReportClick()
-                            "Bank" -> onBankClick()
-                            "Settings" -> onSettingsClick()
-                            else -> onItemSelected(label)
-                        }
-                    },
-            ) {
-                Icon(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = label,
-                    modifier = Modifier.size(33.dp), // Adjust the size to fit within the background,
-                    tint = Color.Unspecified
-                )
-            }
         }
     }
 }

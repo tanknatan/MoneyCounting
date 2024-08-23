@@ -1,15 +1,13 @@
 package com.my.moneycounting.presentation
 
+import android.app.Application
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.*
-
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,194 +18,283 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import com.my.moneycounting.R
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import co.yml.charts.common.model.PlotType
+import co.yml.charts.ui.piechart.charts.DonutPieChart
+import co.yml.charts.ui.piechart.models.PieChartConfig
+import co.yml.charts.ui.piechart.models.PieChartData
+import com.my.moneycounting.data.AppDatabase
 import com.my.moneycounting.data.Transaction
 import com.my.moneycounting.data.TransactionDao
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
-class TransactionViewModel(private val dao: TransactionDao) : ViewModel() {
-    val transactions: State<List<Transaction>> = dao.getTransactionsByType("Expense").collectAsState(initial = emptyList())
+val yellow = Color(0xFFFCF485)
+val gray = Color(0xff282A2C)
+val black = Color(0xff151718)
 
+class TransactionViewModel(application: Application) : AndroidViewModel(application) {
+    fun addTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            dao.insertTransaction(transaction)
+        }
+    }
+
+    fun setType(type: String) {
+        viewModelScope.launch {
+            _typeTransactions.value = type
+        }
+    }
+
+    private val dao: TransactionDao = AppDatabase.getDatabase(application).transactionDao()
+    private val _typeTransactions: MutableStateFlow<String> = MutableStateFlow("Income")
+    val typeTransactions = _typeTransactions.asStateFlow()
+    val transactions: Flow<List<Transaction>> = dao
+        .getAllTransactions()
+        .combine(_typeTransactions) { transactions, type ->
+            if (type == "Income") {
+                transactions.filter { it.type == "Income" }
+            }
+            else {
+                transactions.filter { it.type == "Expenses" }
+            }
+        }
     // You can also add functions to add new transactions, delete them, etc.
 }
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainScreen(viewModel: TransactionViewModel = viewModel()) {
-    val transactions by viewModel.transactions
-
-    val donutChartData = PieChartData(
-        slices = currentItems.map {
-            PieChartData.Slice(
-                label = it.title,
-                value = ((it.amount.toFloat() / currentItems.sumOf { it.amount }) * 100).also {
-                    Log.d("TAG", "donutChartData: $it")
-                },
-                color = Color(it.color)
-            )
-        },
-        plotType = PlotType.Pie
-    )
-    val donutChartConfig = PieChartConfig(
-        labelVisible = true,
-        labelFontSize = 32.sp,
-        strokeWidth = 120f,
-        labelColor = Color.Black,
-        activeSliceAlpha = 0.9f,
-        isAnimationEnable = true,
-        backgroundColor = MainBlue,
-        showSliceLabels = true,
-        sliceLabelEllipsizeAt = TextUtils.TruncateAt.END
-    )
-
+fun MainScreen(
+    viewModel: TransactionViewModel = viewModel(),
+    onAddTransaction: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    onBankClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    val transactions by viewModel.transactions.collectAsState(initial = emptyList())
+    val selectedOperationType by viewModel.typeTransactions.collectAsState()
+    var selectedDate by remember { mutableStateOf("Day") }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(black)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            StatusBar(            info = "Your expenses",
+            StatusBar(info = "Your ${selectedOperationType.lowercase()}",
                 onBackClick = {
                     onBackClick()
                 })
             Spacer(modifier = Modifier.height(16.dp))
-            DonutPieChart(modifier = Modifier
-                .size(220.dp),
-                pieChartData = donutChartData,
-                pieChartConfig = donutChartConfig)
+            if (transactions.isNotEmpty()) {
+                val donutChartData = PieChartData(
+                    slices = transactions.map {
+                        PieChartData.Slice(
+                            label = it.category,
+                            value = ((it.amount.toFloat() / transactions.sumOf { transaction -> transaction.amount }) * 100).also {
+                                Log.d("TAG", "donutChartData: $it")
+                            }.toFloat(),
+                            color = Color(it.color)
+                        )
+                    },
+                    plotType = PlotType.Pie
+                )
+                val donutChartConfig = PieChartConfig(
+                    labelVisible = true,
+                    labelFontSize = 16.sp,
+                    strokeWidth = 6f,
+                    labelColor = Color.White,
+                    activeSliceAlpha = 0.9f,
+                    isAnimationEnable = true,
+                    backgroundColor = gray,
+                    showSliceLabels = true,
+                    sliceLabelEllipsizeAt = TextUtils.TruncateAt.END
+                )
+                DonutPieChart(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .align(Alignment.CenterHorizontally),
+                    pieChartData = donutChartData,
+                    pieChartConfig = donutChartConfig
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .background(
+                            color = yellow,
+                            shape = CircleShape
+                        )
+                        .clip(CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No\n${selectedOperationType.lowercase()}\nfound",
+                        color = black,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            PeriodSelectionButtons()
+            PeriodSelectionButtons(
+                selectedPeriod = selectedDate
+            ) {
+                selectedDate = it
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            IncomeExpenseToggle()
+            IncomeExpenseToggle(
+                selectedOption = selectedOperationType,
+                onOptionSelected = viewModel::setType
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            AddOperationButton()
+            AddOperationButton {
+                onAddTransaction(selectedOperationType)
+            }
             Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Your ${selectedOperationType.lowercase()}:",
+                color = Color(0xffC0C0C0),
+            )
             ExpenseList(transactions)
+            Spacer(modifier = Modifier.weight(1f))
+            BottomNavigationBar(
+                onItemSelected = { selectedItem ->
+                    // Handle generic item selection if needed
+                },
+                onSettingsClick = {
+                    onSettingsClick()
+                },
+                onNotificationClick = {
+                    onNotificationClick()
+                },
+                onBankClick = {
+                    onBankClick()
+                },
+                selectedItem = "Report",
+                onReportClick = {
+
+                }
+            )
         }
 
         // BottomNavigationBar поверх остальных элементов
-        BottomNavigationBar1(
-            onItemSelected = { selectedItem ->
-                // Handle generic item selection if needed
-            },
-            onSettingsClick = {
-                onSettingsClick()
-            },
-            onNotificationClick = {
-                onNotificationClick()
-            },
-            onBankClick = {
-                onBankClick()
-            }
+    }
+}
+
+@Composable
+fun AddOperationButton(onAddClick: () -> Unit) {
+    Button(
+        onClick = onAddClick,
+        modifier = Modifier
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = yellow, contentColor = black)
+    ) {
+        Text(
+            text = "Add operation",
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
-//@Composable
-//fun MainScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit, onNotificationClick: () -> Unit, onBankClick: () -> Unit) {
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(Color.Black)
-//    ) {
-//        // Status Bar
-//        StatusBar(
-//            info = "Your expenses",
-//            onBackClick = {
-//            onBackClick()
-//        })
-//
-//        Spacer(modifier = Modifier.weight(1f))
-//
-//        // Your main content goes here (e.g., expenses list)
-//
-//        // Bottom Navigation Bar
-//        BottomNavigationBar1(
-//            onItemSelected = { selectedItem ->
-//                // Handle generic item selection if needed
-//            },
-//            onSettingsClick = {
-//                onSettingsClick()
-//            },
-//            onNotificationClick = {
-//                onNotificationClick()
-//            },
-//            onBankClick = {
-//                onBankClick()
-//            }
-//        )
-//    }
-//}
-
-
-
 @Composable
-fun BottomNavigationBar1(
-    onItemSelected: (String) -> Unit,
-    onSettingsClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onBankClick: () -> Unit
+fun IncomeExpenseToggle(
+    modifier: Modifier = Modifier,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
 ) {
+    val options = listOf("Income", "Expenses")
+
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp) // Add padding from the bottom of the screen
-            .padding(horizontal = 60.dp)
-            .height(64.dp) // Set the height of the navigation bar
             .background(
-                color = Color.Gray,
-                shape = RoundedCornerShape(50.dp) // Rounded corners
-            ),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
-        verticalAlignment = Alignment.CenterVertically
+                color = Color(0xFF282A2C),
+                shape = ButtonDefaults.shape
+            )
+            .width(200.dp)
+            .then(modifier),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
-        // Replace each icon with your images
-        val items = listOf(
-            Pair(R.drawable.ic_report_act, "Report"),
-            Pair(R.drawable.ic_bank, "Bank"),
-            Pair(R.drawable.ic_notification, "Notifications"),
-            Pair(R.drawable.ic_settings, "Settings")
-        )
-
-        items.forEach { (imageRes, label) ->
-
-            // Check if it's the selected item to highlight it
-            val isSelected = label == "Report" // Example: Highlight the "Report" item
-
-            IconButton(
+        options.forEach { option ->
+            Button(
+                onClick = { onOptionSelected(option) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (option == selectedOption) yellow else Color.Transparent,
+                    contentColor = if (option == selectedOption) black else Color.White
+                ),
                 modifier = Modifier
-                    .size(45.dp) // Adjust size to match the rounded background
-                    .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Black, // Highlight the selected item
-                        shape = androidx.compose.foundation.shape.CircleShape
-                    ),
-                onClick = {
-                        when (label) {
-                            "Notifications" -> onNotificationClick()
-                            "Bank" -> onBankClick()
-                            "Settings" -> onSettingsClick()
-                            else -> onItemSelected(label)
-                        }
-                    }
+                    .weight(1f),
+                contentPadding = PaddingValues(0.dp)
             ) {
-                Icon(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = label,
-                    modifier = Modifier.size(33.dp), // Adjust the size to fit within the background,
-                    tint = Color.Unspecified
+                Text(
+                    text = option,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PeriodSelectionButtons(
+    modifier: Modifier = Modifier,
+    selectedPeriod: String = "Day", // Можно передать начальное значение
+    onPeriodSelected: (String) -> Unit // Функция для обработки выбора периода
+) {
+    val periods = listOf("Day", "Week", "Month", "Year")
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .background(
+                color = Color(0xFF282A2C),
+                shape = ButtonDefaults.shape
+            )
+            .then(modifier),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        periods.forEach { period ->
+            Button(
+                onClick = { onPeriodSelected(period) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (period == selectedPeriod) yellow else Color.Transparent,
+                    contentColor = if (period == selectedPeriod) black else Color.White
+                ),
+                modifier = Modifier
+                    .weight(1f),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = period,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -238,7 +325,7 @@ fun ExpenseItem(transaction: Transaction) {
         Box(
             modifier = Modifier
                 .size(24.dp)
-                .background(Color(transaction.color))
+                .background(Color(transaction.iconDrawable))
         )
     }
 }

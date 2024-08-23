@@ -72,7 +72,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:6.3.0")
 
     implementation ("androidx.room:room-runtime:2.6.1")
-    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
     // Kotlin Extensions and Coroutines support for Room
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation(libs.androidx.core.ktx)
@@ -91,4 +91,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("co.yml:ycharts:2.1.0")
 }

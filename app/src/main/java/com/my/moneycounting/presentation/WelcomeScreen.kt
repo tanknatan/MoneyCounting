@@ -31,7 +31,7 @@ fun WelcomeScreen(onStartClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(black),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -63,7 +63,7 @@ fun WelcomeScreen(onStartClick: () -> Unit) {
                     Text(
                         text = "Start",
                         fontSize = 20.sp,
-                        color = Color.Black,
+                        color = black,
                         modifier = Modifier.weight(1f)
                     )
                     Image(

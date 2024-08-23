@@ -69,7 +69,7 @@ fun CalculatorScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(black)
     ) {
         // Background Image positioned at the top but behind all other elements
         Image(
@@ -88,7 +88,8 @@ fun CalculatorScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .align(Alignment.TopCenter),
+                .align(Alignment.TopCenter)
+                .padding(bottom = 48.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Status Bar at the top
@@ -112,12 +113,12 @@ fun CalculatorScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "Monthly payment:",
-                        color = Color.Black,
+                        color = black,
                         fontSize = 16.sp
                     )
                     Text(
                         text = "$ $monthlyPayment",
-                        color = Color.Black,
+                        color = black,
                         fontSize = 32.sp
                     )
                 }
@@ -202,7 +203,7 @@ fun CalculatorScreen(
             ) {
                 Text(
                     text = "Calculate",
-                    color = Color.Black,
+                    color = black,
                     fontSize = 16.sp
                 )
             }
@@ -211,7 +212,7 @@ fun CalculatorScreen(
         }
 
         // Bottom Navigation Bar
-        BottomNavigationBar2(
+        BottomNavigationBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
             onItemSelected = { selectedItem ->
@@ -225,72 +226,14 @@ fun CalculatorScreen(
             },
             onReportClick = {
                 onReportClick()
-            }
+            },
+            onBankClick = {
+
+            },
+            selectedItem = "Bank"
         )
     }
 }
-
-@Composable
-fun BottomNavigationBar2(
-    modifier: Modifier = Modifier,
-    onItemSelected: (String) -> Unit,
-    onSettingsClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onReportClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp) // Add padding from the bottom of the screen
-            .padding(horizontal = 60.dp)
-            .height(64.dp) // Set the height of the navigation bar
-            .background(
-                color = Color.Gray,
-                shape = RoundedCornerShape(50.dp) // Rounded corners
-            ),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Replace each icon with your images
-        val items = listOf(
-            Pair(R.drawable.ic_report, "Report"),
-            Pair(R.drawable.ic_bank_act, "Bank"),
-            Pair(R.drawable.ic_notification, "Notifications"),
-            Pair(R.drawable.ic_settings, "Settings")
-        )
-
-        items.forEach { (imageRes, label) ->
-
-            // Check if it's the selected item to highlight it
-            val isSelected = label == "Bank" // Example: Highlight the "Report" item
-
-            IconButton(
-                modifier = Modifier
-                    .size(45.dp)
-                    .background(
-                        if (isSelected) Color(0xFFFCF485) else Color.Black,
-                        shape = CircleShape
-                    ) ,
-                onClick = {
-                        when (label) {
-                            "Report" -> onReportClick()
-                            "Notifications" -> onNotificationClick()
-                            "Settings" -> onSettingsClick()
-                            else -> onItemSelected(label)
-                        }
-                    },
-            ) {
-                Icon(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = label,
-                    modifier = Modifier.size(33.dp),
-                    tint = Color.Unspecified
-                )
-            }
-        }
-    }
-}
-
 
 
 

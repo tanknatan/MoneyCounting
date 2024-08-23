@@ -17,13 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,21 +36,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.my.moneycounting.R
+import com.my.moneycounting.data.Transaction
+import java.util.Date
+import kotlin.random.Random
 
 @Composable
-fun AddIncomeScreen(onBackClick: () -> Unit) {
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+fun AddIncomeScreen(
+    viewModel: TransactionViewModel = viewModel(),
+    onBackClick: () -> Unit
+) {
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var amount by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
-            .padding(16.dp)
+            .background(black)
     ) {
         StatusBar(
             info = "Add Income",
@@ -57,7 +67,7 @@ fun AddIncomeScreen(onBackClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Поле для ввода суммы
-        AmountInputField()
+        AmountInputField(value = amount) { amount = it }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -83,32 +93,48 @@ fun AddIncomeScreen(onBackClick: () -> Unit) {
 
         // Кнопка для добавления операции
         Button(
-            onClick = { /* TODO: Add operation logic */ },
+            onClick = {
+                if (selectedCategory == null) {
+                    // Показать сообщение об ошибке
+                    return@Button
+                }
+                if (amount.isEmpty() || amount.toDoubleOrNull() == null){
+                    //
+                    return@Button
+                } else {
+                    val transaction = Transaction(
+                        type = "Income",
+                        date = Date(),
+                        amount = amount.toDouble(),
+                        iconDrawable = selectedCategory!!.icon,
+                        category = selectedCategory!!.name,
+                        color = Random.nextColor()
+                    )
+
+                    viewModel.addTransaction(transaction)
+                    onBackClick()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Yellow),
+            colors = ButtonDefaults.buttonColors(containerColor = yellow),
             shape = RoundedCornerShape(50.dp) // Закругленная форма кнопки
         ) {
-            Text("Add operation", color = Color.Black)
+            Text("Add operation", color = black)
         }
     }
 }
 
 @Composable
-fun CategorySelectionButtons(selectedCategory: String?, onCategorySelected: (String) -> Unit) {
+fun CategorySelectionButtons(selectedCategory: Category?, onCategorySelected: (Category) -> Unit) {
     val categories = listOf(
-        "Trading", "Crypto", "Salary",
-        "Transfers", "Sales", "Others"
-    )
-
-    val icons = listOf(
-        R.drawable.ic_trading,
-        R.drawable.ic_crypto,
-        R.drawable.ic_salary,
-        R.drawable.ic_transfers,
-        R.drawable.ic_sales,
-        R.drawable.ic_others
+        Category("Trading", R.drawable.ic_trading),
+        Category("Crypto", R.drawable.ic_crypto),
+        Category("Home", R.drawable.ic_home),
+        Category("Transfers", R.drawable.ic_transfers),
+        Category("Sales", R.drawable.ic_sales),
+        Category("Others", R.drawable.ic_others)
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -125,7 +151,7 @@ fun CategorySelectionButtons(selectedCategory: String?, onCategorySelected: (Str
                             .background(Color(0xFF282A2C), shape = RoundedCornerShape(12.dp))
                             .border(
                                 width = 2.dp,
-                                color = if (isSelected) Color.Yellow else Color.Transparent,
+                                color = if (isSelected) yellow else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .clickable { onCategorySelected(category) }
@@ -137,18 +163,18 @@ fun CategorySelectionButtons(selectedCategory: String?, onCategorySelected: (Str
                             Box(
                                 modifier = Modifier
                                     .size(48.dp) // Размер желтого круга
-                                    .background(Color.Yellow, shape = CircleShape),
+                                    .background(yellow, shape = CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    painter = painterResource(id = icons[rowIndex * 3 + index]),
-                                    contentDescription = category,
-                                    tint = Color.Black, // Черная иконка на желтом круге
+                                    painter = painterResource(id = category.icon),
+                                    contentDescription = category.name,
+                                    tint = black, // Черная иконка на желтом круге
                                     modifier = Modifier.size(28.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = category, color = Color.White, fontSize = 12.sp)
+                            Text(text = category.name, color = Color.White, fontSize = 12.sp)
                         }
                     }
                 }
@@ -158,24 +184,31 @@ fun CategorySelectionButtons(selectedCategory: String?, onCategorySelected: (Str
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AmountInputField() {
+fun AmountInputField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
     OutlinedTextField(
-        value = "",
-        onValueChange = {},
+        value = value,
+        onValueChange = onValueChange,
         label = { Text("Enter the amount", color = Color.White) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .then(modifier),
         shape = RoundedCornerShape(50.dp), // Закругленные края
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Yellow,
-            unfocusedBorderColor = Color.Yellow,
-            textColor = Color.White,
-            backgroundColor = Color.Black
+            focusedBorderColor = yellow,
+            unfocusedBorderColor = yellow,
+            focusedTextColor = Color.White,
+            containerColor = black
         ),
         singleLine = true,
-        textStyle = TextStyle(color = Color.White)
+        textStyle = TextStyle(color = Color.White),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
 }
 
@@ -185,3 +218,5 @@ fun AmountInputField() {
 fun AddIncomeScreenPreview() {
     AddIncomeScreen(onBackClick = {})
 }
+
+data class Category(val name: String, val icon: Int)

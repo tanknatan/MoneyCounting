@@ -25,7 +25,7 @@ fun FirstStepScreen(onContinueClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(black),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -68,7 +68,7 @@ fun FirstStepScreen(onContinueClick: () -> Unit) {
             // Middle Section: Title and Description
             Spacer(modifier = Modifier.height(20.dp))
             Image(
-                painter = painterResource(id = R.drawable.frame_282), // Replace with the correct image resource ID
+                painter = painterResource(id = R.drawable.frame_280), // Replace with the correct image resource ID
                 contentDescription = "Expense/Income Calculation",
                 modifier = Modifier
                     .padding(horizontal = 16.dp)

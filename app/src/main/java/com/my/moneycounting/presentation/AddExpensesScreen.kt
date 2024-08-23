@@ -34,17 +34,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.my.moneycounting.R
+import com.my.moneycounting.data.Transaction
+import java.util.Date
+import kotlin.random.Random
 
 @Composable
-fun AddExpensesScreen(onBackClick: () -> Unit) {
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
-
+fun AddExpensesScreen(
+    viewModel: TransactionViewModel = viewModel(),
+    onBackClick: () -> Unit
+) {
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var amount by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
-            .padding(16.dp)
+            .background(black)
     ) {
         StatusBar(
             info = "Add Expenses",
@@ -53,7 +59,12 @@ fun AddExpensesScreen(onBackClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Поле для ввода суммы
-        AmountInputField()
+        AmountInputField(
+            value = amount,
+            onValueChange = {
+                amount = it
+            }
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -79,16 +90,41 @@ fun AddExpensesScreen(onBackClick: () -> Unit) {
 
         // Кнопка для добавления операции
         Button(
-            onClick = { /* TODO: Add operation logic */ },
+            onClick = {
+                if (selectedCategory == null) {
+                    // Показать сообщение об ошибке
+                    return@Button
+                }
+                if (amount.isEmpty() || amount.toDoubleOrNull() == null) {
+                    //
+                    return@Button
+                } else {
+                    val transaction = Transaction(
+                        amount = amount.toDouble(),
+                        category = selectedCategory!!.name,
+                        date = Date(),
+                        type = "Expenses",
+                        iconDrawable = selectedCategory!!.icon,
+                        color = Random.nextColor()
+                    )
+
+                    viewModel.addTransaction(transaction)
+                    onBackClick()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFCF485)),
             shape = RoundedCornerShape(50.dp) // Закругленная форма кнопки
         ) {
-            Text("Add operation", color = Color.Black)
+            Text("Add operation", color = black)
         }
     }
+}
+
+ fun Random.Default.nextColor(): Int {
+    return nextInt(0xFF000000.toInt(), 0xFFFFFF)
 }
 
 //@Composable
@@ -102,10 +138,10 @@ fun AddExpensesScreen(onBackClick: () -> Unit) {
 //            .padding(horizontal = 16.dp),
 //        shape = RoundedCornerShape(50.dp), // Закругленные края
 //        colors = TextFieldDefaults.outlinedTextFieldColors(
-//            focusedBorderColor = Color.Yellow,
-//            unfocusedBorderColor = Color.Yellow,
+//            focusedBorderColor = yellow,
+//            unfocusedBorderColor = yellow,
 //            textColor = Color.White,
-//            backgroundColor = Color.Black
+//            backgroundColor = black
 //        ),
 //        singleLine = true,
 //        textStyle = TextStyle(color = Color.White)
@@ -113,31 +149,23 @@ fun AddExpensesScreen(onBackClick: () -> Unit) {
 //}
 
 @Composable
-fun CategorySelectionButtonsE(selectedCategory: String?, onCategorySelected: (String) -> Unit) {
+fun CategorySelectionButtonsE(selectedCategory: Category?, onCategorySelected: (Category) -> Unit) {
     val categories = listOf(
-        "Food", "Car", "Health",
-        "Transport", "Pets", "Rest",
-        "Fun", "Games", "Savings",
-        "Presents", "Finance", "Rent",
-        "Home", "Shopping", "Others"
-    )
-
-    val icons = listOf(
-        R.drawable.ic_food,
-        R.drawable.ic_car,
-        R.drawable.ic_health,
-        R.drawable.ic_transport,
-        R.drawable.ic_pets,
-        R.drawable.ic_rest,
-        R.drawable.ic_fun,
-        R.drawable.ic_games,
-        R.drawable.ic_savings,
-        R.drawable.ic_presents,
-        R.drawable.ic_finance,
-        R.drawable.ic_rent,
-        R.drawable.ic_home,
-        R.drawable.ic_shopping,
-        R.drawable.ic_others
+        Category("Food", R.drawable.ic_food),
+        Category("Car", R.drawable.ic_car),
+        Category("Health", R.drawable.ic_health),
+        Category("Transport", R.drawable.ic_transport),
+        Category("Pets", R.drawable.ic_pets),
+        Category("Rest", R.drawable.ic_rest),
+        Category("Fun", R.drawable.ic_fun),
+        Category("Games", R.drawable.ic_games),
+        Category("Savings", R.drawable.ic_savings),
+        Category("Presents", R.drawable.ic_presents),
+        Category("Finance", R.drawable.ic_finance),
+        Category("Rent", R.drawable.ic_rent),
+        Category("Home", R.drawable.ic_home),
+        Category("Shopping", R.drawable.ic_shopping),
+        Category("Others", R.drawable.ic_others)
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -170,14 +198,14 @@ fun CategorySelectionButtonsE(selectedCategory: String?, onCategorySelected: (St
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    painter = painterResource(id = icons[rowIndex * 3 + index]),
-                                    contentDescription = category,
-                                    tint = Color.Black, // Черная иконка на желтом круге
+                                    painter = painterResource(id = category.icon),
+                                    contentDescription = category.name,
+                                    tint = black, // Черная иконка на желтом круге
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = category, color = Color.White, fontSize = 12.sp)
+                            Text(text = category.name, color = Color.White, fontSize = 12.sp)
                         }
                     }
                 }
