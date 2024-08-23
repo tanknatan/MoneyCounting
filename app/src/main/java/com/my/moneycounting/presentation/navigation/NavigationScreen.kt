@@ -95,31 +95,23 @@ fun NavigationScreen(
         }
         composable(route = Destinations.MainScreen.route) {
             MainScreen(
-                onBackClick = {
-                    navHostController.navigateUp()
-                },
+                onBackClick = navHostController::navigateUp,
                 onSettingsClick = {
                     navHostController.navigate(Destinations.SettingsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
                 onNotificationClick = {
                     navHostController.navigate(Destinations.NewsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
                 onBankClick = {
                     navHostController.navigate(Destinations.CalculatorScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
                 onAddTransaction = { type ->
@@ -129,48 +121,36 @@ fun NavigationScreen(
         }
         composable(route = Destinations.SettingsScreen.route) {
             SettingsScreen(
-                onBackClick = {
-                    navHostController.navigateUp()
-                },
+                onBackClick = navHostController::navigateUp,
                 onNotificationClick = {
                     navHostController.navigate(Destinations.NewsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.SettingsScreen.route)
                     }
                 },
                 onReportClick = {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.SettingsScreen.route)
                     }
                 },
                 onBankClick = {
                     navHostController.navigate(Destinations.CalculatorScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.SettingsScreen.route)
                     }
 
                 },
                 onTermsClick = {
                     navHostController.navigate(Destinations.TermsAndConditionsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.SettingsScreen.route)
                     }
                 },
                 onPrivacyClick = {
                     navHostController.navigate(Destinations.PrivacyPolicyScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.SettingsScreen.route)
                     }
                 }
 
@@ -184,25 +164,19 @@ fun NavigationScreen(
                 onSettingsClick = {
                     navHostController.navigate(Destinations.SettingsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.CalculatorScreen.route)
                     }
                 },
                 onNotificationClick = {
                     navHostController.navigate(Destinations.NewsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.CalculatorScreen.route)
                     }
                 },
                 onReportClick = {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.CalculatorScreen.route)
                     }
                 },
                 onCalculateClick = { amount, term, rate, isAnnuity ->
@@ -210,38 +184,30 @@ fun NavigationScreen(
 
                 }
             )
-
         }
+
         composable(route = Destinations.NewsScreen.route) {
             NewsScreen(
                 viewModel = newsViewModel,
                 onSettingsClick = {
                     navHostController.navigate(Destinations.SettingsScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
                 onReportClick = {
                     navHostController.navigate(Destinations.MainScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.SettingsScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
                 onBankClick = {
                     navHostController.navigate(Destinations.CalculatorScreen.route) {
                         launchSingleTop = true
-                        popUpTo(Destinations.MainScreen.route) {
-
-                        }
+                        popUpTo(Destinations.MainScreen.route)
                     }
                 },
-                onBackClick = {
-                    navHostController.navigateUp()
-                },
+                onBackClick = navHostController::navigateUp,
             )
         }
         composable(route = Destinations.TermsAndConditionsScreen.route) {
@@ -250,17 +216,13 @@ fun NavigationScreen(
         composable(route = Destinations.PrivacyPolicyScreen.route) {
             WebViewScreen(url = "https://www.google.com/")
         }
-        composable(route = Destinations.AddTransactionScreen.route + "/{type}") {
+        composable(route = "${Destinations.AddTransactionScreen.route}/{type}") {
             val type = it.arguments?.getString("type")
             if (type == "Expenses") {
-                AddExpensesScreen {
-                    navHostController.navigateUp()
-                }
+                AddExpensesScreen(onBackClick = navHostController::navigateUp)
             }
             else {
-                AddIncomeScreen {
-                    navHostController.navigateUp()
-                }
+                AddIncomeScreen(onBackClick = navHostController::navigateUp)
             }
         }
     }

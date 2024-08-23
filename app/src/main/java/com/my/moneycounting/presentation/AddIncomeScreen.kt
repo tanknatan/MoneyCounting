@@ -1,6 +1,5 @@
 package com.my.moneycounting.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -121,7 +119,7 @@ fun AddIncomeScreen(
             colors = ButtonDefaults.buttonColors(containerColor = yellow),
             shape = RoundedCornerShape(50.dp) // Закругленная форма кнопки
         ) {
-            Text("Add operation", color = black)
+            Text("Add operation", color = black, fontWeight = FontWeight.Black)
         }
     }
 }
@@ -199,7 +197,7 @@ fun AmountInputField(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .then(modifier),
-        shape = RoundedCornerShape(50.dp), // Закругленные края
+        shape = CircleShape, // Закругленные края
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = yellow,
             unfocusedBorderColor = yellow,

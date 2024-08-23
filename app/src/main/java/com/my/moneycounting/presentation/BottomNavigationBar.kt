@@ -22,7 +22,6 @@ import com.my.moneycounting.R
 fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     selectedItem: String,
-    onItemSelected: (String) -> Unit,
     onSettingsClick: () -> Unit,
     onReportClick: () -> Unit,
     onBankClick: () -> Unit,
@@ -32,13 +31,13 @@ fun BottomNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp) // Add padding from the bottom of the screen
-            .padding(horizontal = 60.dp)
+            .padding(horizontal = 48.dp)
             .height(64.dp) // Set the height of the navigation bar
             .background(
-                color = gray,
+                color = Color(0x9EA2A699),
                 shape = RoundedCornerShape(50.dp) // Rounded corners
             ),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
+        horizontalArrangement = Arrangement.SpaceAround, // Distribute items evenly
         verticalAlignment = Alignment.CenterVertically
     ) {
         val items = listOf(
@@ -64,7 +63,6 @@ fun BottomNavigationBar(
                             "Bank" -> onBankClick()
                             "Settings" -> onSettingsClick()
                             "Notifications" -> onNotificationClick()
-                            else -> onItemSelected(label)
                         }
                     },
             ) {

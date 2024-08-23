@@ -49,7 +49,7 @@ fun StatusBar(
             text = info,
             color = Color.White,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Black,
             modifier = Modifier.align(Alignment.Center)
         )
     }
