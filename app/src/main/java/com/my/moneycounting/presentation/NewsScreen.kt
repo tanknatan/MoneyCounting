@@ -76,7 +76,8 @@ fun NewsScreen(
         StatusBar(
             info = "Finance News",
             modifier = Modifier
-                .align(Alignment.TopCenter),
+                .align(Alignment.TopCenter)
+                .background(black),
             onBackClick = onBackClick
         )
 

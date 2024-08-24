@@ -42,7 +42,7 @@ import com.my.moneycounting.R
 import com.my.moneycounting.data.Transaction
 import java.util.Date
 import kotlin.random.Random
-
+import android.graphics.Color as AndroidColor
 @Composable
 fun AddExpensesScreen(
     viewModel: TransactionViewModel = viewModel(),
@@ -128,7 +128,10 @@ fun AddExpensesScreen(
 }
 
  fun Random.Default.nextColor(): Int {
-    return nextInt(0xFF000000.toInt(), 0xFFFFFF)
+     val hue = (0..360).random()
+     val saturation = (70..90).random()
+     val value = (70..90).random()
+     return AndroidColor.HSVToColor(floatArrayOf(hue.toFloat(), saturation.toFloat() / 100, value.toFloat() / 100))
 }
 
 //@Composable

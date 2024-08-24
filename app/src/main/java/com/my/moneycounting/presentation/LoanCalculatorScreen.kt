@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -74,13 +75,20 @@ fun CalculatorScreen(
                 .align(Alignment.TopCenter)
                 .offset(y = (-50).dp) // Shift the image upwards by 50dp
         )
+        StatusBar(
+            info = "Loan calculator",
+
+            onBackClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
 
         // Scrollable content placed above the background image
         Column(
             modifier = Modifier
+                .padding(horizontal = 16.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
                 .align(Alignment.TopCenter)
                 .padding(bottom = 48.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -89,16 +97,18 @@ fun CalculatorScreen(
             StatusBar(
                 info = "Loan calculator",
 
-                onBackClick = onBackClick)
-
+                onBackClick = onBackClick,
+                modifier = Modifier
+                    .alpha(0f)
+            )
             Spacer(modifier = Modifier.height(10.dp))
 
             // Monthly payment information
             Box(
                 modifier = Modifier
                     .padding(vertical = 12.dp)
-                    .height(100.dp)
-                    .width(150.dp)
+                    .height(120.dp)
+                    .width(170.dp)
                     .background(Color(0xFFFCF485), shape = RoundedCornerShape(32.dp))
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
@@ -110,6 +120,9 @@ fun CalculatorScreen(
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
+                    if (monthlyPayment == "NaN") {
+                        monthlyPayment = "Wrong value"
+                    }
                     Text(
                         text = "$ $monthlyPayment",
                         color = black,
@@ -200,7 +213,8 @@ fun CalculatorScreen(
                 Text(
                     text = "Calculate",
                     color = black,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black
                 )
             }
 

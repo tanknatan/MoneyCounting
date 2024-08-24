@@ -142,8 +142,7 @@ fun MainScreen(
     onAddTransaction: (String) -> Unit,
     onSettingsClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    onBankClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBankClick: () -> Unit
 ) {
     val transactions by viewModel.transactions.collectAsState(initial = emptyList())
     val selectedOperationType by viewModel.typeTransactions.collectAsState()
@@ -159,9 +158,9 @@ fun MainScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 StatusBar(info = "Your ${selectedOperationType.lowercase()}",
-                    onBackClick = {
-                        onBackClick()
-                    })
+                    onBackClick = {},
+                    isFirst = true
+                    )
                 Spacer(modifier = Modifier.height(16.dp))
                 if (transactions.isNotEmpty()) {
                     val donutChartData = PieChartData(
